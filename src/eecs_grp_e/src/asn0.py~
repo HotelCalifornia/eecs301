@@ -72,12 +72,7 @@ def getIsMotorMovingCommand(motor_id):
     except rospy.ServiceException, e:
         print "Service call failed: %s"%e
 
-
-# Main function
-if __name__ == "__main__":
-	rospy.init_node('asn0_node', anonymous=True)
-	rospy.loginfo("Starting Group E Control Node...")
-	# set initial motor position
+def init_motors():
 	target0 = 200
 	target1 = 824
 	target2 = 512
@@ -90,43 +85,75 @@ if __name__ == "__main__":
 			setMotorTargetPositionCommand(motor, target0)
 		elif motor == 2 or motor == 3:
 			setMotorTargetPositionCommand(motor, target2)
-			rospy.loginfo("%f:%f", motor, getMotorPositionCommand(motor)) 
+
+def rotate():
+	target0_f = 200
+	target1_f = 512
 	
+	target0_0 = 250
+	target0_1 = 200
+	target1_0 = 512
+	target1_1 = 824 
+
+	setMotorTargetPositionCommand(MOTORS[5], target1_0)
+	setMotorTargetPositionCommand(MOTORS[1], target1_1)
+	setMotorTargetPositionCommand(MOTORS[5], target1_1)
+
+	setMotorTargetPositionCommand(MOTORS[4], target0_0)
+	setMotorTargetPositionCommand(MOTORS[0], target1_0)
+	setMotorTargetPositionCommand(MOTORS[4], target0_1)
+
+	setMotorTargetPositionCommand(MOTORS[6], target1_0)
+	setMotorTargetPositionCommand(MOTORS[2], target1_1)
+	setMotorTargetPositionCommand(MOTORS[6], target1_1)
+		
+	setMotorTargetPositionCommand(MOTORS[7], target1_0)
+	setMotorTargetPositionCommand(MOTORS[3], target1_0)
+	setMotorTargetPositionCommand(MOTORS[7], target0_1)
+
+	setMotorTargetPositionCommand(MOTORS[1], target1_f)
+	setMotorTargetPositionCommand(MOTORS[0], target0_f)
+	setMotorTargetPositionCommand(MOTORS[2], target1_f)
+	setMotorTargetPositionCommand(MOTORS[3], target0_f)
+
+def wave():
+	target1_0 = 512
+	target1_f = 200
+	target2_f = 824
+	
+	setMotorTargetPositionCommand(MOTORS[4], target1_0)
+	rospy.sleep(0.1)
+	setMotorTargetPositionCommand(MOTORS[4], target1_f)
+	
+	setMotorTargetPositionCommand(MOTORS[6], target1_0)
+	rospy.sleep(0.1)
+	setMotorTargetPositionCommand(MOTORS[6], target2_f)
+
+	setMotorTargetPositionCommand(MOTORS[7], target1_0)
+	rospy.sleep(0.1)
+	setMotorTargetPositionCommand(MOTORS[7], target1_f)
+
+	setMotorTargetPositionCommand(MOTORS[5], target1_0)
+	rospy.sleep(0.1)
+	setMotorTargetPositionCommand(MOTORS[5], target2_f)
+
+
+# Main function
+if __name__ == "__main__":
+	rospy.init_node('asn0_node', anonymous=True)
+	rospy.loginfo("Starting Group E Control Node...")
+
+	# set initial motor position
+	init_motors()	
 	     
 	# control loop running at 10hz
-	r = rospy.Rate(1) # 10hz
+	r = rospy.Rate(10) # 10hz
 	while not rospy.is_shutdown():
-		target0_f = 200
-		target1_f = 512
-	
-		target0_0 = 250
-		target0_1 = 200
-		target1_0 = 512
-		target1_1 = 824 
-
-		setMotorTargetPositionCommand(MOTORS[5], target1_0)
-		setMotorTargetPositionCommand(MOTORS[1], target1_1)
-		setMotorTargetPositionCommand(MOTORS[5], target1_1)
-
-		setMotorTargetPositionCommand(MOTORS[4], target0_0)
-		setMotorTargetPositionCommand(MOTORS[0], target1_0)
-		setMotorTargetPositionCommand(MOTORS[4], target0_1)
-
-		setMotorTargetPositionCommand(MOTORS[6], target1_0)
-		setMotorTargetPositionCommand(MOTORS[2], target1_1)
-		setMotorTargetPositionCommand(MOTORS[6], target1_1)
-		
-		setMotorTargetPositionCommand(MOTORS[7], target1_0)
-		setMotorTargetPositionCommand(MOTORS[3], target1_0)
-		setMotorTargetPositionCommand(MOTORS[7], target0_1)
-
-		setMotorTargetPositionCommand(MOTORS[1], target1_f)
-		setMotorTargetPositionCommand(MOTORS[0], target0_f)
-		setMotorTargetPositionCommand(MOTORS[2], target1_f)
-		setMotorTargetPositionCommand(MOTORS[3], target0_f)
-		
+		if getSensorValue(2) != 0:
+			rotate()
+		elif 700 <= getSensorValue(1) <= 1000:
+			wave()
 
 		r.sleep()
-
 
 
