@@ -94,41 +94,39 @@ if __name__ == "__main__":
 	
 	     
 	# control loop running at 10hz
-	r = rospy.Rate(1) # 10hz
+	r = rospy.Rate(10) # 10hz
 	while not rospy.is_shutdown():
 		target0_f = 200
 		target1_f = 512
 	
 		target0_0 = 250
 		target0_1 = 200
-		setMotorTargetPositionCommand(MOTORS[4], target0_0)
-		setMotorTargetPositionCommand(MOTORS[0], target0_0)
-		setMotorTargetPositionCommand(MOTORS[4], target0_1)
-		'''
 		target1_0 = 512
 		target1_1 = 824 
-		#yo
-		setMotorTargetPositionCommand(MOTORS[5], target1_0)
-		setMotorTargetPositionCommand(MOTORS[1], target1_0)
-		setMotorTargetPositionCommand(MOTORS[5], target1_0)
 
-		setMotorTargetPositionCommand(MOTORS[7], target1_0)
-		setMotorTargetPositionCommand(MOTORS[3], target0_0)
-		setMotorTargetPositionCommand(MOTORS[7], target1_1)
+		setMotorTargetPositionCommand(MOTORS[5], target1_0)
+		setMotorTargetPositionCommand(MOTORS[1], target1_1)
+		setMotorTargetPositionCommand(MOTORS[5], target1_1)
+
+		setMotorTargetPositionCommand(MOTORS[4], target0_0)
+		setMotorTargetPositionCommand(MOTORS[0], target1_0)
+		setMotorTargetPositionCommand(MOTORS[4], target0_1)
+
+		setMotorTargetPositionCommand(MOTORS[6], target1_0)
+		setMotorTargetPositionCommand(MOTORS[2], target1_1)
+		setMotorTargetPositionCommand(MOTORS[6], target1_1)
 		
-		#yo
-		setMotorTargetPositionCommand(MOTORS[6], target0_0)
-		setMotorTargetPositionCommand(MOTORS[2], target1_0)
-		setMotorTargetPositionCommand(MOTORS[6], target0_1)
-		'''
-		setMotorTargetPositionCommand(MOTORS[0], target0_f)
-		'''
-		setMotorTargetPositionCommand(MOTORS[1], target1_f)
-		setMotorTargetPositionCommand(MOTORS[2], target0_f)
-		setMotorTargetPositionCommand(MOTORS[3], target1_f)
-		'''
-		r.sleep()
+		setMotorTargetPositionCommand(MOTORS[7], target1_0)
+		setMotorTargetPositionCommand(MOTORS[3], target1_0)
+		setMotorTargetPositionCommand(MOTORS[7], target0_1)
 
+		setMotorTargetPositionCommand(MOTORS[1], target1_f)
+		setMotorTargetPositionCommand(MOTORS[0], target0_f)
+		setMotorTargetPositionCommand(MOTORS[2], target1_f)
+		setMotorTargetPositionCommand(MOTORS[3], target0_f)
+		
+
+		r.sleep()
 
 
 
