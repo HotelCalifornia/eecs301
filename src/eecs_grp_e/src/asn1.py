@@ -2,6 +2,7 @@
 import roslib
 import rospy
 from fw_wrapper.srv import *
+from sys import argv
 
 # -----------SERVICE DEFINITION-----------
 # allcmd REQUEST DATA
@@ -92,39 +93,22 @@ def getIsMotorMovingCommand(motor_id):
         return resp1.val
     except rospy.ServiceException, e:
         print "Service call failed: %s"%e
-# sets up motors for rotation
-def init_motors_r():
-	target0 = 200
-	target1 = 824
-	target2 = 512
-	for motor in MOTORS:
-		if motor == LEFT_FRONT_E or motor == RIGHT_BACK_E:
-			setMotorTargetPositionCommand(motor, target0)
-		elif motor == RIGHT_FRONT_E or motor == LEFT_BACK_E:
-			setMotorTargetPositionCommand(motor, target1)
-		elif motor == LEFT_FRONT or motor == RIGHT_BACK:
-			setMotorTargetPositionCommand(motor, target0)
-		elif motor == RIGHT_FRONT or motor == LEFT_BACK:
-			setMotorTargetPositionCommand(motor, target2)
 
 def init_motors_w():
-	target0 = 200
-	target1 = 824
-	target2 = 512
 	for motor in MOTORS:
 		if motor == LEFT_FRONT_E or motor == RIGHT_BACK_E:
 			setMotorTargetPositionCommand(motor, target0)
 		elif motor == RIGHT_FRONT_E or motor == LEFT_BACK_E:
 			setMotorTargetPositionCommand(motor, target1)
-		elif motor == RIGHT_FRONT or motor == RIGHT_BACK:
+		elif motor == LEFT_FRONT or motor == LEFT_BACK:
 			setMotorTargetPositionCommand(motor, target2)
-		elif motor == LEFT_FRONT:
+		elif motor == RIGHT_BACK:
 			setMotorTargetPositionCommand(motor, target0)
-		elif motor == LEFT_BACK:
+		elif motor == RIGHT_FRONT:
 			setMotorTargetPositionCommand(motor, target1)
 		else:
 			setMotorTargetPositionCommand(motor, target2)
-
+#take one step forward
 def walk():
 	setMotorTargetPositionCommand(RIGHT_FRONT_E, 749)
 	setMotorTargetPositionCommand(RIGHT_FRONT, target1)
@@ -146,53 +130,7 @@ def walk():
 	setMotorTargetPositionCommand(LEFT_BACK, target1)
 	setMotorTargetPositionCommand(RIGHT_BACK_E, target0)
 
-	# setMotorTargetPositionCommand(MOTORS[4], 125)
-	# setMotorTargetPositionCommand(MOTORS[6], 749)
-
-	# setMotorTargetPositionCommand(MOTORS[5], 749)	
-	# setMotorTargetPositionCommand(MOTORS[7], 125)
-
-	# setMotorTargetPositionCommand(MOTORS[4], 200)
-	# setMotorTargetPositionCommand(MOTORS[6], 824)
-
-	# setMotorTargetPositionCommand(MOTORS[5], 824)
-	# setMotorTargetPositionCommand(MOTORS[7], 200)
-
-def rotate_CW():
-	setMotorTargetPositionCommand(MOTORS[5], target1_0)
-	setMotorTargetPositionCommand(MOTORS[1], target1_1)
-	rospy.sleep(0.05)
-	setMotorTargetPositionCommand(MOTORS[5], target1_1)
-
-	setMotorTargetPositionCommand(MOTORS[4], target0_0)
-	setMotorTargetPositionCommand(MOTORS[0], target1_0)
-	rospy.sleep(0.05)
-	setMotorTargetPositionCommand(MOTORS[4], target0_1)
-
-	setMotorTargetPositionCommand(MOTORS[6], target1_0)
-	setMotorTargetPositionCommand(MOTORS[2], target1_1)
-	rospy.sleep(0.05)
-	setMotorTargetPositionCommand(MOTORS[6], target1_1)
-		
-	setMotorTargetPositionCommand(MOTORS[7], target1_0)
-	setMotorTargetPositionCommand(MOTORS[3], target1_0)
-	rospy.sleep(0.05)
-	setMotorTargetPositionCommand(MOTORS[7], target0_1)
-
-	setMotorTargetPositionCommand(MOTORS[1], target1_f)
-	setMotorTargetPositionCommand(MOTORS[0], target0_f)
-	setMotorTargetPositionCommand(MOTORS[2], target1_f)
-	setMotorTargetPositionCommand(MOTORS[3], target0_f)
-
-def rotate_180_CCW():
-	for i in range(0,8):
-		rotate_CCW()
-
-def rotate_90_CCW():
-	init_motors_r()
-	for i in range(0,4):
-		rotate_CCW()
-
+#turn slightly counterclockwise
 def rotate_CCW():
 	setMotorTargetPositionCommand(LEFT_FRONT_E, 275)
 	setMotorTargetPositionCommand(LEFT_FRONT, 356)
@@ -215,37 +153,186 @@ def rotate_CCW():
 	setMotorTargetPositionCommand(RIGHT_BACK, target0)
 	setMotorTargetPositionCommand(LEFT_BACK, target2)
 
+#turn slightly clockwise
+def rotate_CW():
+	setMotorTargetPositionCommand(LEFT_FRONT_E, 275)
+	setMotorTargetPositionCommand(LEFT_FRONT, 356)
+	setMotorTargetPositionCommand(LEFT_FRONT_E, target0)
+
+	setMotorTargetPositionCommand(RIGHT_FRONT_E, 749)
+	setMotorTargetPositionCommand(RIGHT_FRONT, 668)
+	setMotorTargetPositionCommand(RIGHT_FRONT_E, target1)
+
+	setMotorTargetPositionCommand(RIGHT_BACK_E, 275)
+	setMotorTargetPositionCommand(RIGHT_BACK, 356)
+	setMotorTargetPositionCommand(RIGHT_BACK_E, target0)
+
+	setMotorTargetPositionCommand(LEFT_BACK_E, 749)
+	setMotorTargetPositionCommand(LEFT_BACK, 668)
+	setMotorTargetPositionCommand(LEFT_BACK_E, target1)
+
+	setMotorTargetPositionCommand(LEFT_FRONT, target2)
+	setMotorTargetPositionCommand(RIGHT_FRONT, target1)
+	setMotorTargetPositionCommand(RIGHT_BACK, target2)
+	setMotorTargetPositionCommand(LEFT_BACK, target1)
+
+#wrapper function for rotate_CCW() which causes the robot to turn roughly 180 degrees counterclockwise
+def rotate_180_CCW():
+	for i in range(0,8):
+		rotate_CCW()
+
+#wrapper function for rotate_CCW() which causes the robot to turn roughly 90 degrees counterclockwise
+def rotate_90_CCW():
+	for i in range(0,4):
+		rotate_CCW()
+
+#wrapper function for rotate_CW() which causes the robot to turn roughly 90 degrees clockwise
 def rotate_90_CW():
-	for i in range(0,3):
+	for i in range(0,4):
 		rotate_CW()
 
+#the robot follows a wall to its right, adjusting its position as needed
 def wall_follow_right():
 	init_motors_w()
-	#turn DMS to the right
 	setMotorTargetPositionCommand(DMS, target1)
 	rospy.sleep(0.1)
 	r = rospy.Rate(10)
-	sensor_test()
 	while not rospy.is_shutdown():
-		sensor_test()
-		if 1200 <= getSensorValue(3) <= 1600:
+		if 1200 <= getSensorValue(3) <= 1800:
 			walk()
 		elif getSensorValue(3) < 1200:
-			rotate_CCW()
-		elif getSensorValue(3) > 1600:
-			# TODO: reimplement rotate_CW() with the new algorithm so we can turn right
-			rotate_CCW()
+			rotate_90_CW()
+			rospy.sleep(0.1)
+			for i in range(0,4):
+				walk()
+			rospy.sleep(0.1)
+			rotate_90_CCW()
+		elif getSensorValue(3) > 1800:
+			rotate_90_CCW()
+			rospy.sleep(0.1)
+			for i in range(0,4):
+				walk()
+			rospy.sleep(0.1)
+			rotate_90_CW()
 		r.sleep()
-	sensor_test()
 
-def sensor_test():
-	rospy.loginfo("%f", getSensorValue(3))
+#the robot follows a wall to its left, adjusting its position as needed
+def wall_follow_left():
+	init_motors_w()
+	setMotorTargetPositionCommand(DMS, target0)
+	rospy.sleep(0.1)
+	r = rospy.Rate(10)
+	while not rospy.is_shutdown():
+		if 1200 <= getSensorValue(3) <= 1800:
+			walk()
+		elif getSensorValue(3) < 1200:
+			rotate_90_CCW
+			rospy.sleep(0.1)
+			for i in range(0,4):
+				walk()
+			rospy.sleep(0.1)
+			rotate_90_CW()
+		elif getSensorValue(3) > 1800:
+			rotate_90_CW()
+			rospy.sleep(0.1)
+			for i in range(0,4):
+				walk()
+			rospy.sleep(0.1)
+			rotate_90_CCW()
+		r.sleep()
+
+STATUS = {
+	'CLEAR': True,
+	'FRONT': False,
+	'LEFT': False,
+	'RIGHT': False
+}
+
+#check the robot's current status and act accordingly (like a state machine)
+def check_status():
+	if STATUS['CLEAR']:
+		walk()
+	elif STATUS['FRONT'] and STATUS['LEFT'] and STATUS['RIGHT']:
+		rotate_180_CCW()
+	elif STATUS['FRONT'] and STATUS['LEFT'] and not STATUS['RIGHT']:
+		rotate_CW()
+	elif STATUS['FRONT'] and not STATUS['LEFT'] and STATUS['RIGHT']:
+		rotate_CCW()
+	else:
+		rotate_90_CCW()
+
+#update the robot's current status based on sensor values (like a state machine)
+def update_status():
+	if getSensorValue(3) <= 1800:
+		STATUS['CLEAR'] = True
+	elif getSensorValue(3) >= 1800 and not getSensorValue(1) >= 45 and not getSensorValue(5) >= 45:
+		STATUS['CLEAR'] = False
+		STATUS['FRONT'] = True
+		STATUS['LEFT'] = False
+		STATUS['RIGHT'] = False
+	elif getSensorValue(3) >= 1800 and getSensorValue(1) >= 45 and getSensorValue(5) >= 45:
+		STATUS['CLEAR'] = False
+		STATUS['FRONT'] = True
+		STATUS['LEFT'] = True
+		STATUS['RIGHT'] = True
+	elif getSensorValue(3) >= 1800 and getSensorValue(1) >= 45:
+		STATUS['CLEAR'] = False
+		STATUS['FRONT'] = True
+		STATUS['LEFT'] = True
+		STATUS['RIGHT'] = False
+	elif getSensorValue(3) >= 1800 and getSensorValue(5) >= 45:
+		STATUS['CLEAR'] = False
+		STATUS['FRONT'] = True
+		STATUS['LEFT'] = False
+		STATUS['RIGHT'] = True
+
+#reset the robot's status to the initial values
+def reset_status():
+	STATUS['CLEAR'] = True
+	STATUS['FRONT'] = False
+	STATUS['LEFT'] = False
+	STATUS['RIGHT'] = False
+
+#the robot moves forward, reacting to obstacles in its path
+def reactive():
+	init_motors_wr()
+
+	r = rospy.Rate(10)
+	while not rospy.is_shutdown():
+		update_status()
+		for status in STATUS:
+			rospy.loginfo(status + ": %i", STATUS[status])
+		print '\n'
+		rospy.loginfo("Front: %f", getSensorValue(3))
+		rospy.loginfo("Left: %f", getSensorValue(2))
+		rospy.loginfo("Right: %f", getSensorValue(5))
+		check_status()
+		reset_status()
+
+		r.sleep()
 
 # Main function
 if __name__ == "__main__":
 	rospy.init_node('asn0_node', anonymous=True)
 	rospy.loginfo("Starting Group E Control Node...")
-	
+
+	if argv[1] == 'wall_follow_right':
+		wall_follow_right()
+	elif argv[1] == 'wall_follow_left':
+		wall_follow_left()
+	elif argv[1] == 'reactive':
+		reactive()
+	elif argv[1] == 'turn_90_left':
+		rotate_90_CCW()
+	elif argv[1] == 'turn_90_right':
+		rotate_90_CW()
+	elif argv[1] == 'turn_180':
+		rotate_180_CCW()
+	elif argv[1] == 'walk':
+		while not rospy.is_shutdown():
+			walk()
+	else:
+		print 'unknown argument\n'
 
 
 
