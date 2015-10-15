@@ -110,41 +110,41 @@ def init_motors_w():
 			setMotorTargetPositionCommand(motor, target2)
 #take one step forward
 def walk():
-	setMotorTargetPositionCommand(RIGHT_FRONT_E, 749)
+	setMotorTargetPositionCommand(RIGHT_FRONT_E, 724)
 	setMotorTargetPositionCommand(RIGHT_FRONT, target1)
 	setMotorTargetPositionCommand(LEFT_FRONT, target2)
 	setMotorTargetPositionCommand(RIGHT_FRONT_E, target1)
 
-	setMotorTargetPositionCommand(LEFT_BACK_E, 749)
+	setMotorTargetPositionCommand(LEFT_BACK_E, 724)
 	setMotorTargetPositionCommand(LEFT_BACK, target2)
 	setMotorTargetPositionCommand(RIGHT_BACK, target0)
 	setMotorTargetPositionCommand(LEFT_BACK_E, target1)
 
-	setMotorTargetPositionCommand(LEFT_FRONT_E, 125)
+	setMotorTargetPositionCommand(LEFT_FRONT_E, 300)
 	setMotorTargetPositionCommand(LEFT_FRONT, target0)
 	setMotorTargetPositionCommand(RIGHT_FRONT, target2)
 	setMotorTargetPositionCommand(LEFT_FRONT_E, target0)
 
-	setMotorTargetPositionCommand(RIGHT_BACK_E, 125)
+	setMotorTargetPositionCommand(RIGHT_BACK_E, 300)
 	setMotorTargetPositionCommand(RIGHT_BACK, target2)
 	setMotorTargetPositionCommand(LEFT_BACK, target1)
 	setMotorTargetPositionCommand(RIGHT_BACK_E, target0)
 
 #turn slightly counterclockwise
 def rotate_CCW():
-	setMotorTargetPositionCommand(LEFT_FRONT_E, 275)
+	setMotorTargetPositionCommand(LEFT_FRONT_E, 300)
 	setMotorTargetPositionCommand(LEFT_FRONT, 356)
 	setMotorTargetPositionCommand(LEFT_FRONT_E, target0)
 
-	setMotorTargetPositionCommand(RIGHT_FRONT_E, 749)
+	setMotorTargetPositionCommand(RIGHT_FRONT_E, 724)
 	setMotorTargetPositionCommand(RIGHT_FRONT, 668)
 	setMotorTargetPositionCommand(RIGHT_FRONT_E, target1)
 
-	setMotorTargetPositionCommand(RIGHT_BACK_E, 275)
+	setMotorTargetPositionCommand(RIGHT_BACK_E, 300)
 	setMotorTargetPositionCommand(RIGHT_BACK, 356)
 	setMotorTargetPositionCommand(RIGHT_BACK_E, target0)
 
-	setMotorTargetPositionCommand(LEFT_BACK_E, 749)
+	setMotorTargetPositionCommand(LEFT_BACK_E, 724)
 	setMotorTargetPositionCommand(LEFT_BACK, 668)
 	setMotorTargetPositionCommand(LEFT_BACK_E, target1)
 
@@ -155,19 +155,19 @@ def rotate_CCW():
 
 #turn slightly clockwise
 def rotate_CW():
-	setMotorTargetPositionCommand(LEFT_FRONT_E, 275)
+	setMotorTargetPositionCommand(LEFT_FRONT_E, 300)
 	setMotorTargetPositionCommand(LEFT_FRONT, 356)
 	setMotorTargetPositionCommand(LEFT_FRONT_E, target0)
 
-	setMotorTargetPositionCommand(RIGHT_FRONT_E, 749)
+	setMotorTargetPositionCommand(RIGHT_FRONT_E, 724)
 	setMotorTargetPositionCommand(RIGHT_FRONT, 668)
 	setMotorTargetPositionCommand(RIGHT_FRONT_E, target1)
 
-	setMotorTargetPositionCommand(RIGHT_BACK_E, 275)
+	setMotorTargetPositionCommand(RIGHT_BACK_E, 300)
 	setMotorTargetPositionCommand(RIGHT_BACK, 356)
 	setMotorTargetPositionCommand(RIGHT_BACK_E, target0)
 
-	setMotorTargetPositionCommand(LEFT_BACK_E, 749)
+	setMotorTargetPositionCommand(LEFT_BACK_E, 724)
 	setMotorTargetPositionCommand(LEFT_BACK, 668)
 	setMotorTargetPositionCommand(LEFT_BACK_E, target1)
 
@@ -263,24 +263,19 @@ def check_status():
 
 #update the robot's current status based on sensor values (like a state machine)
 def update_status():
-	if getSensorValue(3) <= 1800:
+	if getSensorValue(3) <= 20:
 		STATUS['CLEAR'] = True
-	elif getSensorValue(3) >= 1800 and not getSensorValue(1) >= 45 and not getSensorValue(5) >= 45:
-		STATUS['CLEAR'] = False
-		STATUS['FRONT'] = True
-		STATUS['LEFT'] = False
-		STATUS['RIGHT'] = False
-	elif getSensorValue(3) >= 1800 and getSensorValue(1) >= 45 and getSensorValue(5) >= 45:
+	elif getSensorValue(3) >= 800 and getSensorValue(1) >= 45 and getSensorValue(5) >= 45:
 		STATUS['CLEAR'] = False
 		STATUS['FRONT'] = True
 		STATUS['LEFT'] = True
 		STATUS['RIGHT'] = True
-	elif getSensorValue(3) >= 1800 and getSensorValue(1) >= 45:
+	elif getSensorValue(3) >= 800 and getSensorValue(1) >= 45:
 		STATUS['CLEAR'] = False
 		STATUS['FRONT'] = True
 		STATUS['LEFT'] = True
 		STATUS['RIGHT'] = False
-	elif getSensorValue(3) >= 1800 and getSensorValue(5) >= 45:
+	elif getSensorValue(3) >= 800 and getSensorValue(5) >= 45:
 		STATUS['CLEAR'] = False
 		STATUS['FRONT'] = True
 		STATUS['LEFT'] = False
@@ -295,7 +290,7 @@ def reset_status():
 
 #the robot moves forward, reacting to obstacles in its path
 def reactive():
-	init_motors_wr()
+	init_motors_w()
 
 	r = rospy.Rate(10)
 	while not rospy.is_shutdown():
@@ -309,6 +304,15 @@ def reactive():
 		check_status()
 		reset_status()
 
+		r.sleep()
+
+def walk_loop(sec=5):
+	times = sec
+	curr = 0
+	r = rospy.Rate(10)
+	while curr < times:
+		walk()
+		curr += 1
 		r.sleep()
 
 # Main function
@@ -330,7 +334,7 @@ if __name__ == "__main__":
 		rotate_180_CCW()
 	elif argv[1] == 'walk':
 		while not rospy.is_shutdown():
-			walk()
+			walk_loop(int(argv[2]))
 	else:
 		print 'unknown argument\n'
 
