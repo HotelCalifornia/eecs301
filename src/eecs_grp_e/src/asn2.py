@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import roslib
 import rospy
+import Queue
 from fw_wrapper.srv import *
 from map import *
 from math import *
@@ -408,31 +409,81 @@ def move_to(c_pos, g_pos):
 ########################
 ## Pathfinding Things ##
 ########################
-# def g(n):
-# 	pass
+def getNeighbours(pos):
+	return [Position(pos.x+1, pos.y), Position(pos.x, pos.y+1), Position(pos.x-1, pos.y), Position(pos.x, pos.y-1)]
 
-# def m_dist(c_pos, g_pos):
-# 	dx = abs(pos.x - g_pos.x)
-# 	dy = abs(pos.y - g_pos.y)
-# 	return dx + dy
+def heuristic(p0, p1):
+	return abs(p0.x - p1.x) + abs(p0.y - p1.y)
 
-# def h(n):
-# 	D * m_dist(n, g_pos)
+def something(start, goal):
+	frontier = PriorityQueue()
+	frontier.put(start)
+	_from = {}
+	cost = {}
+	_from[start] = None
+	cost[start] = 0
 
-# def f(n):
-	# return g(n) + h(n)
+	while not frontier.empty():
+		current = frontier.get()
+		if current == goal:
+			break
+
+		for nxt in getNeighbours(current)
+			new_cost = cost[current] 
+			if nxt not in _from:
+				priority = heuristic(goal, nxt)
+				frontier.put(nxt, priority)
+				_from[nxt] = current
+
+	current = goal
+	path = [current]
+	while current != start:
+		current = _from[current]
+		path += [current]
+
+	return path.reverse()
+
+def generate_costmap(start, map):
+	frontier = Queue()
+	frontier.put(start)
+	cost = {}
+	cost[start] = 0
+
+	while not frontier.empty():
+		current = frontier.get()
+		direction = DIRECTION.South
+		for nxt in getNeighbours(current):
+			if nxt.x > current.x:
+				direction = DIRECTION.East
+			elif nxt.x < current.x:
+				direction = DIRECTION.West
+			elif nxt.y > current.y:
+				direction = DIRECTION.North
+			else:
+				direction = DIRECTION.South
+
+			if map.getNeighborObstacle(current.x, current.y, direction) > 0:
+				map.setNeighborCost(current.x, current.y, direction, 1000)
+			else:
+				map.setNeighborCost(current.x, current.y, direction, 0)
+
 
 if __name__ == '__main__':
 	"""Main function"""
 	rospy.init_node('asn0_node', anonymous=True)
 	rospy.loginfo('Starting Group E Control Node...')
 
+	x0 = int(raw_input('Enter the starting x position: '))
+	y0 = int(raw_input('Enter the starting y position: '))
+
+	xf = int(raw_input('Enter the final x position: '))
+	yf = int(raw_input('Enter the final y position: '))
 	#Make a new Position object to store the robot's position in the world
-	pos = Position()
+	start = Position(x0, y0)
 	#Create the EECSMap object that will store the map to navigate
 	# mp = EECSMap()
 
-	goal = Position(0, -3)
+	goal = Position(xf, yf)
 	# r = rospy.Rate(100)
 	# total = 0
 	# for i in xrange(100):
