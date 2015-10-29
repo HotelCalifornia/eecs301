@@ -4,7 +4,6 @@ import rospy
 import Queue
 from fw_wrapper.srv import *
 from map import *
-from math import *
 
 # -----------SERVICE DEFINITION-----------
 # allcmd REQUEST DATA
@@ -49,13 +48,11 @@ RIGHT_FRONT_E = MOTORS[5]
 LEFT_BACK_E = MOTORS[6]
 RIGHT_BACK_E = MOTORS[7]
 
-DMS = MOTORS[8]
+# DMS = MOTORS[8]
 
 RATE = 1
 
-INITIAL_H_X = 0
-INITIAL_H_Y = 0
-
+# Can store an ordered pair. It's useful
 class Position(object):
 	"""docstring for Position"""
 	def __init__(self, x=0, y=0):
@@ -189,6 +186,7 @@ def rotate_CCW():
 	setMotorTargetPositionCommand(RIGHT_BACK, target0)
 	setMotorTargetPositionCommand(LEFT_BACK, target2)
 
+# Wrapper functions for stepping in each of the cardinal directions
 def walk_N():
 	"""Make the robot move to the north"""
 
@@ -336,7 +334,7 @@ def walk(dir=DIRECTION.North):
 	else:
 		walk_N()
 
-
+# Wrapper functions for moving a full cell in each of the cardinal directions
 def move_N(pos):
 	"""Wrapper function to make the robot move one cell north
 
@@ -393,6 +391,7 @@ def move_W(pos):
 		r.sleep()
 	pos.decr_x()
 
+# Make the robot move from c_pos to g_pos
 def move_to(c_pos, g_pos):
 	if c_pos != g_pos:
 		if c_pos.y > g_pos.y:
@@ -406,18 +405,56 @@ def move_to(c_pos, g_pos):
 				move_E(c_pos)
 		move_to(c_pos, g_pos)
 
+def get_is_any_motor_moving():
+	for motor in MOTORS:
+		if getIsMotorMovingCommand(motor):
+			return True
+	return False
+
 ########################
 ## Pathfinding Things ##
 ########################
-def getNeighbours(pos):
-	return [Position(pos.x+1, pos.y), Position(pos.x, pos.y+1), Position(pos.x-1, pos.y), Position(pos.x, pos.y-1)]
 
+# Returns True if val is present in lst. We had to use this because for some reason, writing `key in dictionary` made our code loop infinitely
+def sauce(val, lst):
+    for v in lst:
+        if v == val:
+            return True
+    return False
+
+# Get all valid neighbours around pos
+def getNeighbours(pos, map):
+    n = []
+    if map.getNeighborObstacle(pos.x, pos.y, DIRECTION.East) == 0:
+        n.append(Position(pos.x, pos.y + 1))
+    if map.getNeighborObstacle(pos.x, pos.y, DIRECTION.South) == 0:
+        n.append(Position(pos.x + 1, pos.y))
+    if map.getNeighborObstacle(pos.x, pos.y, DIRECTION.West) == 0:
+        n.append(Position(pos.x, pos.y - 1))
+    if map.getNeighborObstacle(pos.x, pos.y, DIRECTION.North) == 0:
+        n.append(Position(pos.x - 1, pos.y))
+    return n
+
+# Return the Manhattan distance from p0 to p1
 def heuristic(p0, p1):
 	return abs(p0.x - p1.x) + abs(p0.y - p1.y)
 
-def something(start, goal):
+# Returns the DIRECTION from pos0 to pos1. A very naive function, only works when pos0 and pos1 are direct neighbours 
+def get_direction(pos0, pos1):
+	if pos0.x < pos1.x:
+		return DIRECTION.South
+	elif pos0.x > pos1.x:
+		return DIRECTION.North
+
+	if pos0.y < pos1.y:
+		return DIRECTION.East
+	elif pos0.y > pos1.y:
+		return DIRECTION.West
+
+# An implementation of the A* algorithm (Patrick, as in Patrick Star)
+def a_patrick(start, goal, map):
 	frontier = PriorityQueue()
-	frontier.put(start)
+	frontier.put(start, 0)
 	_from = {}
 	cost = {}
 	_from[start] = None
@@ -425,13 +462,15 @@ def something(start, goal):
 
 	while not frontier.empty():
 		current = frontier.get()
+
 		if current == goal:
 			break
 
-		for nxt in getNeighbours(current)
-			new_cost = cost[current] 
-			if nxt not in _from:
-				priority = heuristic(goal, nxt)
+		for nxt in getNeighbours(current, map)
+			new_cost = cost[current] + map.getNeighborCost(current.x, current.y, get_direction(current, nxt)) 
+			if not sauce(nxt, cost) or new_cost < cost[nxt]:
+				cost[nxt] = new_cost
+				priority = new_cost + heuristic(goal, nxt)
 				frontier.put(nxt, priority)
 				_from[nxt] = current
 
@@ -443,57 +482,52 @@ def something(start, goal):
 
 	return path.reverse()
 
-def generate_costmap(start, map):
-	frontier = Queue()
-	frontier.put(start)
-	cost = {}
-	cost[start] = 0
+# Generate the costmap from start to goal on map
+def generate_costmap(start, goal, map):
+    frontier = Queue()
+    frontier.put(start)
+    visited = {}
+    visited[start] = True
 
-	while not frontier.empty():
-		current = frontier.get()
-		direction = DIRECTION.South
-		for nxt in getNeighbours(current):
-			if nxt.x > current.x:
-				direction = DIRECTION.East
-			elif nxt.x < current.x:
-				direction = DIRECTION.West
-			elif nxt.y > current.y:
-				direction = DIRECTION.North
-			else:
-				direction = DIRECTION.South
+    while not frontier.empty():
+        current = frontier.get()
+        for next in getNeighbours(current, map):
+            if not sauce(next, visited):
+                map.setCost(next.x, next.y, map.getCost(current.x, current.y) + 1)
+                frontier.put(next)
+                visited[next] = True
 
-			if map.getNeighborObstacle(current.x, current.y, direction) > 0:
-				map.setNeighborCost(current.x, current.y, direction, 1000)
-			else:
-				map.setNeighborCost(current.x, current.y, direction, 0)
-
+# Make the robot move along a path calculated by a_patrick(...)
+def path(start, goal, map):
+	path = a_patrick(start, goal, map)
+	current = start
+	r = rospy.Rate(RATE)
+	for node in path:
+		move_to(current, node)
+		current = node
+		while get_is_any_motor_moving():
+			r.sleep()
+		r.sleep()
 
 if __name__ == '__main__':
 	"""Main function"""
 	rospy.init_node('asn0_node', anonymous=True)
 	rospy.loginfo('Starting Group E Control Node...')
 
+	# User input
 	x0 = int(raw_input('Enter the starting x position: '))
 	y0 = int(raw_input('Enter the starting y position: '))
 
 	xf = int(raw_input('Enter the final x position: '))
 	yf = int(raw_input('Enter the final y position: '))
-	#Make a new Position object to store the robot's position in the world
+
+	# Make a new Position object to store the robot's position in the world
 	start = Position(x0, y0)
-	#Create the EECSMap object that will store the map to navigate
-	# mp = EECSMap()
-
+	# Make a new Position object to store the robot's goal position
 	goal = Position(xf, yf)
-	# r = rospy.Rate(100)
-	# total = 0
-	# for i in xrange(100):
-	# 	total += getSensorValue(3)
-	# 	r.sleep()
-	# INITIAL_H_Y = total / 100
+	# Create the EECSMap object that will store the map to navigate
+	mp = EECSMap()
 
-	# INITIAL_H_X = getSensorValue(4)
-	# print INITIAL_H_Y
+	generate_costmap(start, goal, mp)
 
-
-
-	move_to(pos, goal)
+	

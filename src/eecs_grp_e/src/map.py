@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import sys
-from Queue import Queue, PriorityQueue
+
 # Usage:
 #
 # #Create object
@@ -446,90 +446,3 @@ class EECSMap():
             return self.obstacle_size_x
         else:
             return self.obstacle_size_y
-
-class Position(object):
-    """docstring for Position"""
-    def __init__(self, x=0, y=0):
-        self.x = x
-        self.y = y
-    
-    def incr_x(self):
-        self.x += 1
-
-    def incr_y(self):
-        self.y += 1
-
-    def decr_x(self):
-        self.x -= 1
-
-    def decr_y(self):
-        self.y -= 1
-
-    def __eq__(self, other):
-        return self.x == other.x and self.y == other.y
-
-    def __ne__(self, other):
-        return not self.__eq__(other)
-
-    def __str__(self):
-        return '(' + str(self.x) + ',' + str(self.y) + ')'
-
-def getNeighbours(pos, map):
-    n = []
-    if map.getNeighborObstacle(pos.x, pos.y, DIRECTION.East) == 0:
-        n += [Position(pos.x + 1, pos.y)]
-    if map.getNeighborObstacle(pos.x, pos.y, DIRECTION.South) == 0:
-        n += [Position(pos.x, pos.y + 1)]
-    if map.getNeighborObstacle(pos.x, pos.y, DIRECTION.West) == 0:
-        n += [Position(pos.x - 1, pos.y)]
-    if map.getNeighborObstacle(pos.x, pos.y, DIRECTION.North) == 0:
-        n += [Position(pos.x, pos.y - 1)]
-    return n
-
-def generate_costmap(start, goal, map):
-    frontier = []
-    frontier.append(start)
-    visited = {}
-    visited[start] = True
-
-    cost = 0
-    while frontier[len(frontier)-1] != goal:
-        print str(cost)
-        current = frontier[len(frontier)-1]
-        for next in getNeighbours(current, map):
-          if next not in visited:
-            if next.x > current.x:
-                direction = DIRECTION.East
-            elif next.x < current.x:
-                direction = DIRECTION.West
-            elif next.y > current.y:
-                direction = DIRECTION.North
-            else:
-                direction = DIRECTION.South
-            map.setNeighborCost(current.x, current.y, direction, cost)
-            frontier.append(next)
-            visited[next] = True
-        cost += 1
-    # current = start
-    # if goal == current:
-    #     return
-    # else:
-    #     for nxt in getNeighbours(current, map):
-    #         if nxt.x > current.x:
-    #             direction = DIRECTION.East
-    #         elif nxt.x < current.x:
-    #             direction = DIRECTION.West
-    #         elif nxt.y > current.y:
-    #             direction = DIRECTION.North
-    #         else:
-    #             direction = DIRECTION.South
-    #         if map.getNeighborObstacle(current.x, current.y, direction) == 0:
-    #             map.setNeighborCost(current.x, current.y, direction, cost + 1)
-
-    #         # generate_costmap(nxt, goal, map, cost + 1)
-
-
-m = EECSMap()
-generate_costmap(Position(), Position(x=5, y=4), m)
-m.printCostMap()
-m.printObstacleMap()
