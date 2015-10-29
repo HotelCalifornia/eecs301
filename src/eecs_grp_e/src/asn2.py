@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import roslib
 import rospy
-import Queue
+from Queue import Queue, PriorityQueue
 from fw_wrapper.srv import *
 from map import *
 
@@ -76,6 +76,9 @@ class Position(object):
 
 	def __ne__(self, other):
 		return not self.__eq__(other)
+	
+	def __str__(self):
+		return '(' + str(self.x) + ',' + str(self.y) + ')'
 
 # wrapper function to call service to get sensor value
 def getSensorValue(port):
@@ -466,19 +469,19 @@ def a_patrick(start, goal, map):
 		if current == goal:
 			break
 
-		for nxt in getNeighbours(current, map)
+		for nxt in getNeighbours(current, map):
 			new_cost = cost[current] + map.getNeighborCost(current.x, current.y, get_direction(current, nxt)) 
-			if not sauce(nxt, cost) or new_cost < cost[nxt]:
+			if not sauce(nxt, cost):
 				cost[nxt] = new_cost
 				priority = new_cost + heuristic(goal, nxt)
 				frontier.put(nxt, priority)
 				_from[nxt] = current
-
+	
 	current = goal
 	path = [current]
 	while current != start:
 		current = _from[current]
-		path += [current]
+		path.append(current)
 
 	return path.reverse()
 
@@ -529,5 +532,6 @@ if __name__ == '__main__':
 	mp = EECSMap()
 
 	generate_costmap(start, goal, mp)
-
+    
+	path(start, goal, mp)
 	
