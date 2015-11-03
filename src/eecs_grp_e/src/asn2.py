@@ -75,7 +75,7 @@ class Position(object):
 		return self.x == other.x and self.y == other.y
 
 	def __ne__(self, other):
-		return not self.__eq__(other)
+		return self.x != other.x and self.y != other.y
 	
 	def __str__(self):
 		return '(' + str(self.x) + ',' + str(self.y) + ')'
@@ -454,13 +454,26 @@ def get_direction(pos0, pos1):
 	elif pos0.y > pos1.y:
 		return DIRECTION.West
 
+def get_lowest_cost_neighbour(node, map):
+	for n in getNeighbours(node, map):
+		if map.getCost(n.x, n.y) < map.getCost(node.x, node.y):
+			return n
+
+def r_p(start, goal, map):
+	path = []
+	current = goal
+	while current != start:
+		current = get_lowest_cost_neighbour(current, map)
+		path.append(current)
+
+	path.reverse()
+	return path
+
 # An implementation of the A* algorithm (Patrick, as in Patrick Star)
 def a_patrick(start, goal, map):
 	frontier = PriorityQueue()
 	frontier.put(start, 0)
-	_from = {}
 	cost = {}
-	_from[start] = None
 	cost[start] = 0
 
 	while not frontier.empty():
@@ -471,19 +484,13 @@ def a_patrick(start, goal, map):
 
 		for nxt in getNeighbours(current, map):
 			new_cost = cost[current] + map.getNeighborCost(current.x, current.y, get_direction(current, nxt)) 
-			if not sauce(nxt, cost):
+			if not nxt in cost.keys():
 				cost[nxt] = new_cost
+				map.setCost(nxt.x, nxt.y, new_cost)
 				priority = new_cost + heuristic(goal, nxt)
 				frontier.put(nxt, priority)
-				_from[nxt] = current
-	
-	current = goal
-	path = [current]
-	while current != start:
-		current = _from[current]
-		path.append(current)
 
-	return path.reverse()
+	return r_p(start, goal, map)
 
 # Generate the costmap from start to goal on map
 def generate_costmap(start, goal, map):
@@ -507,15 +514,16 @@ def path(start, goal, map):
 	r = rospy.Rate(RATE)
 	for node in path:
 		move_to(current, node)
+		print 'moving from ' + str(current) + ' to ' + str(node)
 		current = node
 		while get_is_any_motor_moving():
 			r.sleep()
 		r.sleep()
-
+	
 if __name__ == '__main__':
 	"""Main function"""
-	rospy.init_node('asn0_node', anonymous=True)
-	rospy.loginfo('Starting Group E Control Node...')
+	# rospy.init_node('asn0_node', anonymous=True)
+	# rospy.loginfo('Starting Group E Control Node...')
 
 	# User input
 	x0 = int(raw_input('Enter the starting x position: '))
