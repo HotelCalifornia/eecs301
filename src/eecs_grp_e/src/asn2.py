@@ -217,9 +217,6 @@ def walk_N():
 	setMotorTargetPositionCommand(RIGHT_BACK_E, target0)
 	rospy.sleep(0.5)
 
-	rospy.loginfo('gyro x: %f' % getSensorValue(4))
-	rospy.loginfo('gryo y: %f' % getSensorValue(3))
-
 def walk_S():
 	"""Make the robot move to the south"""
 	setMotorTargetPositionCommand(RIGHT_BACK_E, 300)
@@ -316,9 +313,6 @@ def walk_W(init=False):
 	setMotorTargetPositionCommand(LEFT_FRONT, target0)
 	setMotorTargetPositionCommand(LEFT_BACK_E, target1)
 
-	rospy.loginfo('gyro x: %f' % getSensorValue(4))
-	rospy.loginfo('gryo y: %f' % getSensorValue(3))
-
 def walk(dir=DIRECTION.North):
 	"""Make the robot walk in the direction specified
 
@@ -406,6 +400,8 @@ def move_to(c_pos, g_pos):
 				move_W(c_pos)
 			elif c_pos.x < g_pos.x:
 				move_E(c_pos)
+		print str(c_pos)
+		print str(g_pos)
 		move_to(c_pos, g_pos)
 
 def get_is_any_motor_moving():
@@ -460,7 +456,7 @@ def get_lowest_cost_neighbour(node, map):
 			return n
 
 def r_p(start, goal, map):
-	path = []
+	path = [goal]
 	current = goal
 	while current != start:
 		current = get_lowest_cost_neighbour(current, map)
@@ -512,18 +508,23 @@ def path(start, goal, map):
 	path = a_patrick(start, goal, map)
 	current = start
 	r = rospy.Rate(RATE)
-	for node in path:
+	while len(path) != 0:
+		node = path.pop(0)
 		move_to(current, node)
+	# for node in path:
+	# 	move_to(current, node)
 		print 'moving from ' + str(current) + ' to ' + str(node)
+	# 	current = node
+	# 	# while get_is_any_motor_moving():
+	# 	# 	r.sleep()
+	# 	r.sleep()
 		current = node
-		while get_is_any_motor_moving():
-			r.sleep()
 		r.sleep()
 	
 if __name__ == '__main__':
 	"""Main function"""
-	# rospy.init_node('asn0_node', anonymous=True)
-	# rospy.loginfo('Starting Group E Control Node...')
+	rospy.init_node('asn0_node', anonymous=True)
+	rospy.loginfo('Starting Group E Control Node...')
 
 	# User input
 	x0 = int(raw_input('Enter the starting x position: '))
@@ -531,6 +532,8 @@ if __name__ == '__main__':
 
 	xf = int(raw_input('Enter the final x position: '))
 	yf = int(raw_input('Enter the final y position: '))
+
+	init_motors()
 
 	# Make a new Position object to store the robot's position in the world
 	start = Position(x0, y0)
@@ -540,6 +543,8 @@ if __name__ == '__main__':
 	mp = EECSMap()
 
 	generate_costmap(start, goal, mp)
-    
-	path(start, goal, mp)
+	r = rospy.Rate(RATE)
+	move_to(start, goal)
+	r.sleep()
+
 	
