@@ -507,6 +507,7 @@ def generate_costmap(start, goal, map):
                 visited[next] = True
 
 def explore(pos, map):
+	r = rospy.Rate(RATE)
 	while not rospy.is_shutdown():
 		s, e, w, n = False
 		## place obstacles on the map ##
@@ -569,6 +570,7 @@ def explore(pos, map):
 		else:
 			move_S(pos)
 
+		r.sleep()
 
 # Make the robot move along a path calculated by a_patrick(...)
 def path(start, goal, map):
@@ -592,28 +594,28 @@ if __name__ == '__main__':
 	"""Main function"""
 	rospy.init_node('asn0_node', anonymous=True)
 	rospy.loginfo('Starting Group E Control Node...')
+	if raw_input('Type E for Exploration or P for Pathfinding: ').upper() == 'E':
+		map = EECSMap()
+		explore(Position(x=0, y=0), map)
+	else:
+		# User input
+		x0 = int(raw_input('Enter the starting x position: '))
+		y0 = int(raw_input('Enter the starting y position: '))
 
-	# User input
-	x0 = int(raw_input('Enter the starting x position: '))
-	y0 = int(raw_input('Enter the starting y position: '))
+		xf = int(raw_input('Enter the final x position: '))
+		yf = int(raw_input('Enter the final y position: '))
 
-	xf = int(raw_input('Enter the final x position: '))
-	yf = int(raw_input('Enter the final y position: '))
+		init_motors()
 
-	init_motors()
+		# Make a new Position object to store the robot's position in the world
+		start = Position(x0, y0)
+		# Make a new Position object to store the robot's goal position
+		goal = Position(xf, yf)
+		# Create the EECSMap object that will store the map to navigate
+		map = EECSMap()
 
-	# Make a new Position object to store the robot's position in the world
-	# start = Position(x0, y0)
-	# # Make a new Position object to store the robot's goal position
-	# goal = Position(xf, yf)
-	# # Create the EECSMap object that will store the map to navigate
-	# mp = EECSMap()
-
-	# generate_costmap(start, goal, mp)
-	r = rospy.Rate(RATE)
-	# move_to(start, goal)
-	# r.sleep()
-	while not rospy.is_shutdown():
-		rospy.loginfo('dms: %f', getSensorValue(DMS_S))
-		rospy.loginfo('ir: %f', getSensorValue(IR_S))
-		r.sleep()
+		generate_costmap(start, goal, mp)
+		r = rospy.Rate(RATE)
+		path(start, goal, map)
+		# r.sleep()
+	
