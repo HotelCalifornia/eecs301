@@ -145,7 +145,7 @@ def init_motors():
 			setMotorTargetPositionCommand(motor, target0)
 		elif motor == RIGHT_FRONT:
 			setMotorTargetPositionCommand(motor, target1)
-		else:
+		elif motor == DMS:
 			setMotorTargetPositionCommand(motor, target2)
 
 def rotate_CW():
@@ -196,25 +196,25 @@ def rotate_CCW():
 def walk_N():
 	"""Make the robot move to the north"""
 
-	setMotorTargetPositionCommand(RIGHT_FRONT_E, 624)
+	setMotorTargetPositionCommand(RIGHT_FRONT_E, 724)
 	setMotorTargetPositionCommand(RIGHT_FRONT, target1)
 	setMotorTargetPositionCommand(LEFT_FRONT, target2)
 	setMotorTargetPositionCommand(RIGHT_FRONT_E, target1)
 	rospy.sleep(0.5)
 
-	setMotorTargetPositionCommand(LEFT_BACK_E, 624)
+	setMotorTargetPositionCommand(LEFT_BACK_E, 724)
 	setMotorTargetPositionCommand(LEFT_BACK, target2)
 	setMotorTargetPositionCommand(RIGHT_BACK, target0)
 	setMotorTargetPositionCommand(LEFT_BACK_E, target1)
 	rospy.sleep(0.5)
 
-	setMotorTargetPositionCommand(LEFT_FRONT_E, 400)
+	setMotorTargetPositionCommand(LEFT_FRONT_E, 300)
 	setMotorTargetPositionCommand(LEFT_FRONT, target0)
 	setMotorTargetPositionCommand(RIGHT_FRONT, target2)
 	setMotorTargetPositionCommand(LEFT_FRONT_E, target0)
 	rospy.sleep(0.5)
 
-	setMotorTargetPositionCommand(RIGHT_BACK_E, 400)
+	setMotorTargetPositionCommand(RIGHT_BACK_E, 300)
 	setMotorTargetPositionCommand(RIGHT_BACK, target2)
 	setMotorTargetPositionCommand(LEFT_BACK, target1)
 	setMotorTargetPositionCommand(RIGHT_BACK_E, target0)
@@ -222,32 +222,29 @@ def walk_N():
 
 def walk_S():
 	"""Make the robot move to the south"""
-	setMotorTargetPositionCommand(RIGHT_BACK_E, 300)
+	setMotorTargetPositionCommand(RIGHT_BACK_E, 250)
 	setMotorTargetPositionCommand(RIGHT_BACK, target0)
 	setMotorTargetPositionCommand(LEFT_BACK, target2)
 	setMotorTargetPositionCommand(RIGHT_BACK_E, target0)
 	rospy.sleep(0.5)
 
-	setMotorTargetPositionCommand(LEFT_FRONT_E, 300)
+	setMotorTargetPositionCommand(LEFT_FRONT_E, 250)
 	setMotorTargetPositionCommand(LEFT_FRONT, target2)
 	setMotorTargetPositionCommand(RIGHT_FRONT, target1)
 	setMotorTargetPositionCommand(LEFT_FRONT_E, target0)
 	rospy.sleep(0.5)
 
-	setMotorTargetPositionCommand(LEFT_BACK_E, 724)
+	setMotorTargetPositionCommand(LEFT_BACK_E, 774)
 	setMotorTargetPositionCommand(LEFT_BACK, target1)
 	setMotorTargetPositionCommand(RIGHT_BACK, target2)
 	setMotorTargetPositionCommand(LEFT_BACK_E, target1)
 	rospy.sleep(0.5)
 
-	setMotorTargetPositionCommand(RIGHT_FRONT_E, 724)
+	setMotorTargetPositionCommand(RIGHT_FRONT_E, 774)
 	setMotorTargetPositionCommand(RIGHT_FRONT, target2)
 	setMotorTargetPositionCommand(LEFT_FRONT, target0)
 	setMotorTargetPositionCommand(RIGHT_FRONT_E, target1)
 	rospy.sleep(0.5)
-
-	rospy.loginfo('gyro x: %f' % getSensorValue(4))
-	rospy.loginfo('gryo y: %f' % getSensorValue(3))
 
 def walk_E(init=False):
 	"""Make the robot move to the east
@@ -261,28 +258,25 @@ def walk_E(init=False):
 		setMotorTargetPositionCommand(RIGHT_BACK, target2)
 		setMotorTargetPositionCommand(LEFT_BACK, target2)
 
-	setMotorTargetPositionCommand(RIGHT_BACK_E, 300)
+	setMotorTargetPositionCommand(RIGHT_BACK_E, 250)
 	setMotorTargetPositionCommand(RIGHT_BACK, target0)
 	setMotorTargetPositionCommand(RIGHT_FRONT, target2)
 	setMotorTargetPositionCommand(RIGHT_BACK_E, target0)
 
-	setMotorTargetPositionCommand(LEFT_BACK_E, 724)
+	setMotorTargetPositionCommand(LEFT_BACK_E, 774)
 	setMotorTargetPositionCommand(LEFT_BACK, target1)
 	setMotorTargetPositionCommand(LEFT_FRONT, target2)
 	setMotorTargetPositionCommand(LEFT_BACK_E, target1)
 
-	setMotorTargetPositionCommand(RIGHT_FRONT_E, 724)
+	setMotorTargetPositionCommand(RIGHT_FRONT_E, 774)
 	setMotorTargetPositionCommand(RIGHT_FRONT, target1)
 	setMotorTargetPositionCommand(RIGHT_BACK, target2)
 	setMotorTargetPositionCommand(RIGHT_FRONT_E, target1)
 
-	setMotorTargetPositionCommand(LEFT_FRONT_E, 300)
+	setMotorTargetPositionCommand(LEFT_FRONT_E, 250)
 	setMotorTargetPositionCommand(LEFT_FRONT, target0)
 	setMotorTargetPositionCommand(LEFT_BACK, target2)
 	setMotorTargetPositionCommand(LEFT_FRONT_E, target0)
-
-	# rospy.loginfo('gyro x: %f' % getSensorValue(4))
-	# rospy.loginfo('gryo y: %f' % getSensorValue(3))
 
 def walk_W(init=False):
 	"""Make the robot move to the west
@@ -296,22 +290,22 @@ def walk_W(init=False):
 		setMotorTargetPositionCommand(RIGHT_BACK, target2)
 		setMotorTargetPositionCommand(LEFT_BACK, target2)
 
-	setMotorTargetPositionCommand(RIGHT_FRONT_E, 724)
+	setMotorTargetPositionCommand(RIGHT_FRONT_E, 774)
 	setMotorTargetPositionCommand(RIGHT_FRONT, target2)
 	setMotorTargetPositionCommand(RIGHT_BACK, target0)
 	setMotorTargetPositionCommand(RIGHT_FRONT_E, target1)
 
-	setMotorTargetPositionCommand(LEFT_FRONT_E, 300)
+	setMotorTargetPositionCommand(LEFT_FRONT_E, 250)
 	setMotorTargetPositionCommand(LEFT_FRONT, target2)
 	setMotorTargetPositionCommand(LEFT_BACK, target1)
 	setMotorTargetPositionCommand(LEFT_FRONT_E, target0)
 
-	setMotorTargetPositionCommand(RIGHT_BACK_E, 300)
+	setMotorTargetPositionCommand(RIGHT_BACK_E, 250)
 	setMotorTargetPositionCommand(RIGHT_BACK, target2)
 	setMotorTargetPositionCommand(RIGHT_FRONT, target1)
 	setMotorTargetPositionCommand(RIGHT_BACK_E, target0)
 
-	setMotorTargetPositionCommand(LEFT_BACK_E, 724)
+	setMotorTargetPositionCommand(LEFT_BACK_E, 774)
 	setMotorTargetPositionCommand(LEFT_BACK, target2)
 	setMotorTargetPositionCommand(LEFT_FRONT, target0)
 	setMotorTargetPositionCommand(LEFT_BACK_E, target1)
@@ -507,70 +501,96 @@ def generate_costmap(start, goal, map):
                 visited[next] = True
 
 def explore(pos, map):
-	r = rospy.Rate(RATE)
+	rat = rospy.Rate(RATE)
 	while not rospy.is_shutdown():
-		s, e, w, n = False
+		s = False
+		e = False
+		w = False
+		n = False
 		## place obstacles on the map ##
 		setMotorTargetPositionCommand(DMS, target2)
+		rospy.sleep(1)
 		if getSensorValue(DMS_S) > 1400:
 			#obstacle to the south
-			map.setObstacle(pos.x, pos.y, 1, DIRECTION.South)
-			s = True
 
-		setMotorTargetPositionCommand(DMS, target0)
-		if getSensorValue(DMS_S) > 1400:
-			#obstacle to the east
-			map.setObstacle(pos.x, pos.y, 1, DIRECTION.East)
-			e = True
-
-		setMotorTargetPositionCommand(DMS, target1)
-		if getSensorValue(DMS_S) > 1400:
-			#obstacle to the west
-			map.setObstacle(pos.x, pos.y, 1, DIRECTION.West)
-			w = True
-
-		if getSensorValue(IR_S) > 120:
-			#obstacle to the north
-			map.setObstacle(pos.x, pos.y, 1, DIRECTION.North)
 			n = True
 
-		map.printObstacleMap()
+		setMotorTargetPositionCommand(DMS, target0)
+		rospy.sleep(1)
+		if getSensorValue(DMS_S) > 1400:
+			#obstacle to the wast
+			
+			e = True
+		
+		setMotorTargetPositionCommand(DMS, target2)
+		setMotorTargetPositionCommand(DMS, target1)
+		rospy.sleep(1)
+		if getSensorValue(DMS_S) > 1400:
+			#obstacle to the east
+			
+			w = True
+		setMotorTargetPositionCommand(DMS, target2)
+		if getSensorValue(IR_S) > 120:
+			#obstacle to the north
 
+			s = True
+		
+		print 's: ' + str(s) + ' w: ' + str(w) + ' e: ' + str(e) + ' n: ' + str(n)
+		map.printObstacleMap()
+		
 		## move robot ##
-		if s and e and w:
+		if s and e and w and not n:
+			map.setObstacle(pos.x, pos.y, 1, DIRECTION.South)
+			map.setObstacle(pos.x, pos.y, 1, DIRECTION.East)
+			map.setObstacle(pos.x, pos.y, 1, DIRECTION.West)
 			move_N(pos)
-		elif s and e:
+		elif s and e and not w and not n:
+			map.setObstacle(pos.x, pos.y, 1, DIRECTION.South)
+			map.setObstacle(pos.x, pos.y, 1, DIRECTION.East)
 			if r.randint(0,1) > 0:
 				move_N(pos)
 			else:
 				move_W(pos)
-		elif s and w:
+		elif s and w and not e:
+			map.setObstacle(pos.x, pos.y, 1, DIRECTION.South)
+			map.setObstacle(pos.x, pos.y, 1, DIRECTION.West)
 			if r.randint(0,1) > 0:
 				move_N(pos)
 			else:
 				move_E(pos)
-		elif n and e and w:
+		elif n and e and w and not s:
+			map.setObstacle(pos.x, pos.y, 1, DIRECTION.North)
+			map.setObstacle(pos.x, pos.y, 1, DIRECTION.East)
+			map.setObstacle(pos.x, pos.y, 1, DIRECTION.West)
 			move_S(pos)
-		elif n and e:
+		elif n and e and not w:
+			map.setObstacle(pos.x, pos.y, 1, DIRECTION.North)
+			map.setObstacle(pos.x, pos.y, 1, DIRECTION.East)
 			if r.randint(0,1) > 0:
 				move_S(pos)
 			else:
 				move_W(pos)
-		elif n and w:
+		elif n and w and not e and not s:
+			map.setObstacle(pos.x, pos.y, 1, DIRECTION.North)
+			map.setObstacle(pos.x, pos.y, 1, DIRECTION.West)
 			if r.randint(0,1) > 0:
 				move_S(pos)
 			else:
 				move_E(pos)
-		elif s:
+		elif s and not e and not w and not n:
+			map.setObstacle(pos.x, pos.y, 1, DIRECTION.South)
 			move_N(pos)
-		elif e:
+		elif e and not w and not s and not n:
+			map.setObstacle(pos.x, pos.y, 1, DIRECTION.East)
 			move_W(pos)
-		elif w:
+		elif w and not e and not s and not n:
+			map.setObstacle(pos.x, pos.y, 1, DIRECTION.West)
 			move_E(pos)
 		else:
+			map.setObstacle(pos.x, pos.y, 1, DIRECTION.North)
 			move_S(pos)
 
-		r.sleep()
+		rat.sleep()
 
 # Make the robot move along a path calculated by a_patrick(...)
 def path(start, goal, map):
@@ -595,7 +615,9 @@ if __name__ == '__main__':
 	rospy.init_node('asn0_node', anonymous=True)
 	rospy.loginfo('Starting Group E Control Node...')
 	if raw_input('Type E for Exploration or P for Pathfinding: ').upper() == 'E':
+		init_motors()
 		map = EECSMap()
+		map.clearObstacleMap()
 		explore(Position(x=0, y=0), map)
 	else:
 		# User input
@@ -613,9 +635,8 @@ if __name__ == '__main__':
 		goal = Position(xf, yf)
 		# Create the EECSMap object that will store the map to navigate
 		map = EECSMap()
-
+		
 		generate_costmap(start, goal, mp)
 		r = rospy.Rate(RATE)
 		path(start, goal, map)
 		# r.sleep()
-	
