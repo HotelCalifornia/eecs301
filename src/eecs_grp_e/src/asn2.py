@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import roslib
 import rospy
+import random as r
 from Queue import Queue, PriorityQueue
 from fw_wrapper.srv import *
 from map import *
@@ -48,7 +49,9 @@ RIGHT_FRONT_E = MOTORS[5]
 LEFT_BACK_E = MOTORS[6]
 RIGHT_BACK_E = MOTORS[7]
 
-# DMS = MOTORS[8]
+DMS = MOTORS[8]
+DMS_S = 6
+IR_S = 4
 
 RATE = 1
 
@@ -503,6 +506,70 @@ def generate_costmap(start, goal, map):
                 frontier.put(next)
                 visited[next] = True
 
+def explore(pos, map):
+	while not rospy.is_shutdown():
+		s, e, w, n = False
+		## place obstacles on the map ##
+		setMotorTargetPositionCommand(DMS, target2)
+		if getSensorValue(DMS_S) > 1400:
+			#obstacle to the south
+			map.setObstacle(pos.x, pos.y, 1, DIRECTION.South)
+			s = True
+
+		setMotorTargetPositionCommand(DMS, target0)
+		if getSensorValue(DMS_S) > 1400:
+			#obstacle to the east
+			map.setObstacle(pos.x, pos.y, 1, DIRECTION.East)
+			e = True
+
+		setMotorTargetPositionCommand(DMS, target1)
+		if getSensorValue(DMS_S) > 1400:
+			#obstacle to the west
+			map.setObstacle(pos.x, pos.y, 1, DIRECTION.West)
+			w = True
+
+		if getSensorValue(IR_S) > 120:
+			#obstacle to the north
+			map.setObstacle(pos.x, pos.y, 1, DIRECTION.North)
+			n = True
+
+		map.printObstacleMap()
+
+		## move robot ##
+		if s and e and w:
+			move_N(pos)
+		elif s and e:
+			if r.randint(0,1) > 0:
+				move_N(pos)
+			else:
+				move_W(pos)
+		elif s and w:
+			if r.randint(0,1) > 0:
+				move_N(pos)
+			else:
+				move_E(pos)
+		elif n and e and w:
+			move_S(pos)
+		elif n and e:
+			if r.randint(0,1) > 0:
+				move_S(pos)
+			else:
+				move_W(pos)
+		elif n and w:
+			if r.randint(0,1) > 0:
+				move_S(pos)
+			else:
+				move_E(pos)
+		elif s:
+			move_N(pos)
+		elif e:
+			move_W(pos)
+		elif w:
+			move_E(pos)
+		else:
+			move_S(pos)
+
+
 # Make the robot move along a path calculated by a_patrick(...)
 def path(start, goal, map):
 	path = a_patrick(start, goal, map)
@@ -536,15 +603,17 @@ if __name__ == '__main__':
 	init_motors()
 
 	# Make a new Position object to store the robot's position in the world
-	start = Position(x0, y0)
-	# Make a new Position object to store the robot's goal position
-	goal = Position(xf, yf)
-	# Create the EECSMap object that will store the map to navigate
-	mp = EECSMap()
+	# start = Position(x0, y0)
+	# # Make a new Position object to store the robot's goal position
+	# goal = Position(xf, yf)
+	# # Create the EECSMap object that will store the map to navigate
+	# mp = EECSMap()
 
-	generate_costmap(start, goal, mp)
+	# generate_costmap(start, goal, mp)
 	r = rospy.Rate(RATE)
-	move_to(start, goal)
-	r.sleep()
-
-	
+	# move_to(start, goal)
+	# r.sleep()
+	while not rospy.is_shutdown():
+		rospy.loginfo('dms: %f', getSensorValue(DMS_S))
+		rospy.loginfo('ir: %f', getSensorValue(IR_S))
+		r.sleep()

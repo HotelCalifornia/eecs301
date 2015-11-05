@@ -445,4 +445,7 @@ class EECSMap():
         if xDim:
             return self.obstacle_size_x
         else:
-            return self.obstacle_size_y
+            return self.obstacle_size_
+
+m = EECSMap()
+m.printObstacleMap()
