@@ -350,7 +350,7 @@ def move_S(pos):
 	   pos -- the robot's current Position
 	"""
 	for motor in MOTORS:
-		setMotorTargetSpeed(motor, 400)
+		setMotorTargetSpeed(motor, 600)
 	r = rospy.Rate(RATE)
 	for i in range(5):
 		walk(DIRECTION.South)
@@ -385,21 +385,51 @@ def move_W(pos):
 		r.sleep()
 	pos.decr_x()
 
+# Returns the DIRECTION from pos0 to pos1. A very naive function, only works when pos0 and pos1 are direct neighbours 
+def get_direction(pos0, pos1):
+	if pos0.x < pos1.x:
+		return DIRECTION.South
+	elif pos0.x > pos1.x:
+		return DIRECTION.North
+
+	if pos0.y < pos1.y:
+		return DIRECTION.East
+	elif pos0.y > pos1.y:
+		return DIRECTION.West
+
 # Make the robot move from c_pos to g_pos
 def move_to(c_pos, g_pos):
-	if c_pos != g_pos:
-		if c_pos.y > g_pos.y:
-			move_S(c_pos)
-		elif c_pos.y < g_pos.y:
-			move_N(c_pos)
-		else:
-			if c_pos.x > g_pos.x:
-				move_W(c_pos)
-			elif c_pos.x < g_pos.x:
+	d = get_direction(c_pos, g_pos)
+	r = rospy.Rate(RATE)
+	if abs(g_pos.x - c_pos.x) > 1 or abs(g_pos.y - g_pos.y) > 1:
+		if g_pos.x - c_pos.x > 1:
+			while c_pos != g_pos:
+				move_S(c_pos)
+				r.sleep
+		elif g_pos.y - c_pos.y > 1:
+			while c_pos != g_pos:
 				move_E(c_pos)
-		print str(c_pos)
-		print str(g_pos)
-		move_to(c_pos, g_pos)
+				r.sleep()
+		elif g_pos.x - c_pos.x < 0:
+			while c_pos != g_pos:
+				move_N(c_pos)
+				r.sleep()
+		else:
+			while c_pos != g_pos:
+				move_W(c_pos)
+				r.sleep()
+
+	else:
+		if d == DIRECTION.North:
+			move_N(c_pos)
+		elif d == DIRECTION.South:
+			move_S(c_pos)
+		elif d == DIRECTION.East:
+			move_E(c_pos)
+		elif d == DIRECTION.West:
+			move_W(c_pos)
+		else:
+			print 'move_to(',str(c_pos),', ',str(g_pos),'): Invalid direction :('
 
 def get_is_any_motor_moving():
 	for motor in MOTORS:
@@ -435,22 +465,13 @@ def getNeighbours(pos, map):
 def heuristic(p0, p1):
 	return abs(p0.x - p1.x) + abs(p0.y - p1.y)
 
-# Returns the DIRECTION from pos0 to pos1. A very naive function, only works when pos0 and pos1 are direct neighbours 
-def get_direction(pos0, pos1):
-	if pos0.x < pos1.x:
-		return DIRECTION.South
-	elif pos0.x > pos1.x:
-		return DIRECTION.North
-
-	if pos0.y < pos1.y:
-		return DIRECTION.East
-	elif pos0.y > pos1.y:
-		return DIRECTION.West
-
 def get_lowest_cost_neighbour(node, map):
+	costs = {}
 	for n in getNeighbours(node, map):
-		if map.getCost(n.x, n.y) < map.getCost(node.x, node.y):
-			return n
+		costs[n] = map.getCost(n.x, n.y)
+
+	return min(costs, key=costs.get)
+
 
 def r_p(start, goal, map):
 	path = [goal]
@@ -595,19 +616,19 @@ def explore(pos, map):
 # Make the robot move along a path calculated by a_patrick(...)
 def path(start, goal, map):
 	path = a_patrick(start, goal, map)
-	current = start
+	# current = start
 	r = rospy.Rate(RATE)
-	while len(path) != 0:
-		node = path.pop(0)
-		move_to(current, node)
-	# for node in path:
+	# while len(path) != 0:
+	# 	node = path.pop(0)
 	# 	move_to(current, node)
-		print 'moving from ' + str(current) + ' to ' + str(node)
+	# 	print 'moving from ' + str(current) + ' to ' + str(node)
 	# 	current = node
-	# 	# while get_is_any_motor_moving():
-	# 	# 	r.sleep()
 	# 	r.sleep()
-		current = node
+	last = start
+	for p in path:
+		print 'moving from ' + str(last) + ' to ' + str(p)
+		move_to(last, p)
+		last = p
 		r.sleep()
 	
 if __name__ == '__main__':
@@ -635,8 +656,7 @@ if __name__ == '__main__':
 		goal = Position(xf, yf)
 		# Create the EECSMap object that will store the map to navigate
 		map = EECSMap()
-		
-		generate_costmap(start, goal, mp)
+		map.printObstacleMap()
+		generate_costmap(start, goal, map)
 		r = rospy.Rate(RATE)
 		path(start, goal, map)
-		# r.sleep()
