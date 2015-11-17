@@ -276,12 +276,6 @@ catkin_DIR:PATH=/opt/ros/indigo/share/catkin/cmake
 cpp_common_DIR:PATH=/opt/ros/indigo/share/cpp_common/cmake
 
 //Value Computed by CMake
-eecs301_grp_X_BINARY_DIR:STATIC=/home/rosuser/ros_workspace/build/eecs_grp_e
-
-//Value Computed by CMake
-eecs301_grp_X_SOURCE_DIR:STATIC=/home/rosuser/ros_workspace/src/eecs_grp_e
-
-//Value Computed by CMake
 eecs301_grp_e_BINARY_DIR:STATIC=/home/rosuser/ros_workspace/build/eecs_grp_e
 
 //Value Computed by CMake
