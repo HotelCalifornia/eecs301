@@ -58,13 +58,48 @@ def read_data(fname='data.csv'):
 
     return dresult
 
+
+def v_avg(vecs):
+    xs = []
+    ys = []
+    zs = []
+    for v in vecs:
+        xs.append(v[0])
+        ys.append(v[1])
+        zs.append(v[2])
+
+    xresult = 0
+    for x in xs:
+        xresult += x
+
+    yresult = 0
+    for y in ys:
+        yresult += y
+
+    zresult = 0
+    for z in zs:
+        zresult += z
+
+    return xresult / len(xs), yresult / len(ys), zresult / len(zs)
+
+
+# noinspection PyShadowingNames
+def analyse(data, nn):
+    vectors = []
+    for p in nn:
+        vectors.append(data[p])
+
+    return v_avg(vectors)
+
+
 if not argv:
     k = 5
 else:
     k = int(argv[1])
 
 data = read_data()
-pt = (7.3893, 8.3293)
+tpt = argv[2].strip('(').strip(')').split(',')  # '(4.563,2.14231)' ==> ['4.563', '2.14231']
+pt = (float(tpt[0]), float(tpt[1]))  # ['4.563', '2.14231'] ==> (4.563, 2.14231)
 nn = nns(pt, data, k)
 
 x0 = []
