@@ -1,6 +1,6 @@
 import csv
-import matplotlib.pyplot as plt
-from sys import argv
+# import matplotlib.pyplot as plt
+# from sys import argv
 
 
 # noinspection PyShadowingNames
@@ -92,33 +92,33 @@ def analyse(data, nn):
     return v_avg(vectors)
 
 
-if not argv:
-    k = 5
-else:
-    k = int(argv[1])
+# if not argv:
+#     k = 5
+# else:
+#     k = int(argv[1])
 
-data = read_data()
-tpt = argv[2].strip('(').strip(')').split(',')  # '(4.563,2.14231)' ==> ['4.563', '2.14231']
-pt = (float(tpt[0]), float(tpt[1]))  # ['4.563', '2.14231'] ==> (4.563, 2.14231)
-nn = nns(pt, data, k)
+# data = read_data()
+# tpt = argv[2].strip('(').strip(')').split(',')  # '(4.563,2.14231)' ==> ['4.563', '2.14231']
+# pt = (float(tpt[0]), float(tpt[1]))  # ['4.563', '2.14231'] ==> (4.563, 2.14231)
+# nn = nns(pt, data, k)
 
-x0 = []
-x1 = []
-for k in data.keys():
-    x0.append(k[0])
-    x1.append(k[1])
+# x0 = []
+# x1 = []
+# for k in data.keys():
+#     x0.append(k[0])
+#     x1.append(k[1])
 
-plt.plot(x0, x1, 'b.')
-plt.plot(pt[0], pt[1], 'r.')
+# plt.plot(x0, x1, 'b.')
+# plt.plot(pt[0], pt[1], 'r.')
 
-nx0 = []
-nx1 = []
-for p in nn:
-    nx0.append(p[0])
-    nx1.append(p[1])
+# nx0 = []
+# nx1 = []
+# for p in nn:
+#     nx0.append(p[0])
+#     nx1.append(p[1])
 
-plt.plot(nx0, nx1, 'yH')
+# plt.plot(nx0, nx1, 'yH')
 
-plt.show()
+# plt.show()
 
-print nn
+# print nn
