@@ -6,50 +6,8 @@ import nns
 import convert_ir_dms as con
 import asn3_data_gen as dg
 
+from asn3_utility.utility import COMMANDS, sendCommand
 from fw_wrapper.srv import *
-
-# -----------SERVICE DEFINITION-----------
-# allcmd REQUEST DATA
-# ---------
-# string command_type
-# int8 device_id
-# int16 target_val
-# int8 n_dev
-# int8[] dev_ids
-# int16[] target_vals
-
-# allcmd RESPONSE DATA
-# ---------
-# int16 val
-# --------END SERVICE DEFINITION----------
-
-# ----------COMMAND TYPE LIST-------------
-# GetSensorValue
-# GetMotorTargetPosition
-# GetMotorCurrentPosition
-# SetMotorTargetPosition
-
-def enum(**enums):
-	return type('Enum', (), enums)
-
-COMMANDS = enum(GetSensorValue='GetSensorValue', GetMotorTargetPosition='GetMotorTargetPosition', GetMotorCurrentPosition='GetMotorCurrentPosition', SetMotorTargetPosition='SetMotorTargetPosition')
-
-def sendCommand(cmd, **kwargs):
-	"""Abstracted function for calling ROS services
-
-	   Note that the 'receiver' keyword arg is not optional (the command needs to be sent /somewhere/!)
-	"""
-	rospy.wait_for_service('allcmd')
-	try:
-		send_command = rospy.ServiceProxy('allcmd', allcmd)
-		try:
-			resp1 = send_command(cmd, kwargs['receiver'], kwargs['val'], 0, [0], [0])
-		except KeyError:
-			resp1 = send_command(cmd, kwargs['receiver'], 0, 0, [0], [0])
-		return resp1.val
-	except rospy.ServiceException, e:
-		print "Service call failed: %s"%e
-
 
 def init_motors():
 	for motor in MOTORS:
@@ -69,7 +27,6 @@ def init_motors():
 
 def walk_N():
 	"""Make the robot move to the north"""
-
 	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_FRONT_E, val=724)
 	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_FRONT, val=target1)
 	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_FRONT, val=target2)
@@ -124,9 +81,7 @@ def walk_S():
 
 def walk_E(init=False):
 	"""Make the robot move to the east
-
-	   Keyword arguments:
-	   init -- if True, orient the motors to make strafing easy (default: False)
+	:param init: Used to mark whether or not the function should set up the motors for strafing [default: False]
 	"""
 	if init:
 		sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_FRONT, val=target1)
@@ -157,9 +112,7 @@ def walk_E(init=False):
 
 def walk_W(init=False):
 	"""Make the robot move to the west
-
-	   Keyword arguments:
-	   init -- if True, orient the motors to make strafing easy (default: False)
+	:param init: Used to mark whether or not the function should set up the motors for strafing [default: False]
 	"""	
 	if init:
 		sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_FRONT, target1)
