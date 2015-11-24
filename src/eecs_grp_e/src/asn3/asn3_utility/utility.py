@@ -25,8 +25,6 @@ from fw_wrapper.srv import *
 def enum(**enums):
 	return type('Enum', (), enums)
 
-COMMANDS = enum(GetSensorValue='GetSensorValue', GetMotorTargetPosition='GetMotorTargetPosition', GetMotorCurrentPosition='GetMotorCurrentPosition', SetMotorTargetPosition='SetMotorTargetPosition')
-
 def sendCommand(cmd, **kwargs):
 	"""Abstracted function for calling ROS services
 

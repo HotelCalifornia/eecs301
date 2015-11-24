@@ -6,7 +6,9 @@ import nns
 import convert_ir_dms as con
 import asn3_data_gen as dg
 
-from asn3_utility.utility import COMMANDS, sendCommand
+from asn3_utility.utility import sendCommand
+from asn3_utility.globals import *
+
 from fw_wrapper.srv import *
 
 def init_motors():
@@ -51,98 +53,79 @@ def walk_N():
 	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_BACK_E, val=target0)
 	rospy.sleep(0.5)
 
+def rotate():
+	target0_f = 200
+	target1_f = 512
+	
+	target0_0 = 250
+	target0_1 = 200
+	target1_0 = 512
+	target1_1 = 824 
 
-def walk_S():
-	"""Make the robot move to the south"""
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_BACK_E, val=250)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_BACK, val=target0)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_BACK, val=target2)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_BACK_E, val=target0)
-	rospy.sleep(0.5)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_FRONT_E, val=target1_0)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_FRONT, val=target1_1)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_FRONT_E, val=target1_1)
 
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_FRONT_E, val=250)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_FRONT, val=target2)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_FRONT, val=target1)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_FRONT_E, val=target0)
-	rospy.sleep(0.5)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_FRONT_E, val=target0_0)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_FRONT, val=target1_0)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_FRONT_E, val=target0_1)
 
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_BACK_E, val=774)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_BACK, val=target1)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_BACK, val=target2)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_BACK_E, val=target1)
-	rospy.sleep(0.5)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_BACK_E, val=target1_0)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_BACK, val=target1_1)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_BACK_E, val=target1_1)
+		
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_BACK_E, val=target1_0)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_BACK, val=target1_0)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_BACK_E, val=target0_1)
 
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_FRONT_E, val=774)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_FRONT, val=target2)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_FRONT, val=target0)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_FRONT_E, val=target1)
-	rospy.sleep(0.5)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_FRONT, val=target1_f)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_FRONT, val=target0_f)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_BACK, val=target1_f)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_BACK, val=target0_f)
 
-
-def walk_E(init=False):
-	"""Make the robot move to the east
-	:param init: Used to mark whether or not the function should set up the motors for strafing [default: False]
-	"""
-	if init:
-		sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_FRONT, val=target1)
-		sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_FRONT, val=target0)
-		sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_BACK, val=target2)
-		sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_BACK, val=target2)
-
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_BACK_E, val=250)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_BACK, val=target0)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_FRONT, val=target2)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_BACK_E, val=target0)
-
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_BACK_E, val=774)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_BACK, val=target1)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_FRONT, val=target2)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_BACK_E, val=target1)
-
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_FRONT_E, val=774)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_FRONT, val=target1)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_BACK, val=target2)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_FRONT_E, val=target1)
-
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_FRONT_E, val=250)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_FRONT, val=target0)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_BACK, val=target2)
+def rotate_CCW():
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_FRONT_E, val=300)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_FRONT, val=356)
 	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_FRONT_E, val=target0)
 
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_FRONT_E, val=724)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_FRONT, val=668)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_FRONT_E, val=target1)
 
-def walk_W(init=False):
-	"""Make the robot move to the west
-	:param init: Used to mark whether or not the function should set up the motors for strafing [default: False]
-	"""	
-	if init:
-		sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_FRONT, target1)
-		sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_FRONT, target0)
-		sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_BACK, target2)
-		sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_BACK, target2)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_BACK_E, val=300)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_BACK, val=356)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_BACK_E, val=target0)
 
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_FRONT_E, 774)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_FRONT, target2)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_BACK, target0)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_FRONT_E, target1)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_BACK_E, val=724)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_BACK, val=668)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_BACK_E, val=target1)
 
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_FRONT_E, 250)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_FRONT, target2)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_BACK, target1)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_FRONT_E, target0)
-
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_BACK_E, 250)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_BACK, target2)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_FRONT, target1)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_BACK_E, target0)
-
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_BACK_E, 774)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_BACK, target2)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_FRONT, target0)
-	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_BACK_E, target1)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_FRONT, val=target0)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_FRONT, val=target2)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=RIGHT_BACK, val=target0)
+	sendCommand(COMMANDS.SetMotorTargetPosition, receiver=LEFT_BACK, val=target2)
 
 
 if __name__ == '__main__':
 	rospy.init_node('test_node', anonymous=True)
-	rospy.loginfo('%f', sendCommand(COMMANDS.GetSensorValue, receiver=1))
+	init_motors()
+	while not rospy.is_shutdown():
+		if raw_input('? ') == '!':
+			rotate()
 
-	
+
+# if the robot has strayed from its path:
+# let phi represent the change in angle with respect to the horizontal (when viewed from above)
+# let theta represent the change in angle with respect to the vertical (when viewed from above)
+# let S be the length of each section of wall
+# let x_0 and x_1 be the distance to the wall from the left and right sides of the robot:
+# -----------
+# |         |
+# |<-->X<-->|
+# |x_0   x_1|
+# |         |
+# phi = arccos(S / (x_0 + x_1)) [* (180 / pi)]
+# theta = 90 - phi
+# now turn by an amount that makes theta --> 0
+
+

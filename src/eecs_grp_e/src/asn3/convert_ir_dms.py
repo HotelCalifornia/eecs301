@@ -2,7 +2,9 @@
 import roslib
 import rospy
 
-from asn3_utility.utility import COMMANDS, sendCommand
+from asn3_utility.utility import sendCommand
+from asn3_utility.globals import *
+
 from fw_wrapper.srv import *
 
 # DMS
