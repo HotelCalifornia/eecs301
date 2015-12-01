@@ -60,13 +60,15 @@ def read_data(fname='data.csv'):
 
 
 def v_avg(vecs):
+    """Return the average vector of a set of vectors
+    :param vecs: A set of vectors
+    """
     xs = []
     ys = []
-    zs = []
+
     for v in vecs:
         xs.append(v[0])
         ys.append(v[1])
-        zs.append(v[2])
 
     xresult = 0
     for x in xs:
@@ -76,21 +78,22 @@ def v_avg(vecs):
     for y in ys:
         yresult += y
 
-    zresult = 0
-    for z in zs:
-        zresult += z
-
-    return xresult / len(xs), yresult / len(ys), zresult / len(zs)
+    return xresult / len(xs), yresult / len(ys)
 
 
 # noinspection PyShadowingNames
 def analyse(data, nn):
+    """Returns the average vector from the set of nearest neighbour vectors
+    :param data: The whole dataset
+    :param nn: The set of nearest neighbours
+    """
     vectors = []
     for p in nn:
         vectors.append(data[p])
 
     return v_avg(vectors)
 
+### If you have matplotlib installed, try this! :)
 
 # if not argv:
 #     k = 5

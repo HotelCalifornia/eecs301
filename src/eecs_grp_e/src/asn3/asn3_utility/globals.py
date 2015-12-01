@@ -1,5 +1,7 @@
 from utility import enum
 
+__doc__ = """Yeah, globals might be bad, but here's a file full of them anyway"""
+
 target0 = 200
 target1 = 824
 target2 = 512
@@ -16,6 +18,7 @@ RIGHT_FRONT_E = MOTORS[5]
 LEFT_BACK_E = MOTORS[6]
 RIGHT_BACK_E = MOTORS[7]
 
-DMS = MOTORS[8]
+IR_X = 1
+IR_Y = 2
 
 COMMANDS = enum(GetSensorValue='GetSensorValue', GetMotorTargetPosition='GetMotorTargetPosition', GetMotorCurrentPosition='GetMotorCurrentPosition', SetMotorTargetPosition='SetMotorTargetPosition')

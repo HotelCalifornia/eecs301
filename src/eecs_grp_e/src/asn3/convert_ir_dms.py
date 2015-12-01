@@ -32,14 +32,14 @@ def convert_dms_cm(dms_val):
     """Convert values from the DMS into centimetres
     :param dms_val: DMS value
     """
-    return 413836.537 * (dms_val ** -1.416)
+    return 413836.537 * (1 / (dms_val ** 1.416))
 
 
 def convert_ir_cm(ir_val):
     """Convert values from the IR sensors into centimetres
     :param ir_val: IR sensor value
     """
-    return 98.098 * (ir_val ** -0.406)
+    return 98.098 * (1 / (ir_val ** 0.406))
 
 
 def avg(vals):

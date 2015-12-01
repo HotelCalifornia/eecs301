@@ -23,6 +23,7 @@ from fw_wrapper.srv import *
 # GetSensorValue
 
 def enum(**enums):
+	"""Enumerated type workaround for python! (thanks Alex)"""
 	return type('Enum', (), enums)
 
 def sendCommand(cmd, **kwargs):
